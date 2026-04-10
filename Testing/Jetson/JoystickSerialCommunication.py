@@ -1,13 +1,13 @@
 import threading
 import time
-
+from typing import Tuple
 import serial
 from inputs import get_gamepad
 
 
 state = {
-    "left":  {"raw": 0, "duty": 0.0, "direction": "STOP"},
-    "right": {"raw": 0, "duty": 0.0, "direction": "STOP"},
+    "left":  {"raw": 0, "duty": 0.0, "direction": "S"},
+    "right": {"raw": 0, "duty": 0.0, "direction": "S"},
 }
 state_lock = threading.Lock()
 
@@ -32,7 +32,7 @@ DEADZONE_LOW  = 1500   # umbral para la mitad positiva (REVERSE)
 POLL_INTERVAL_MS = 20 
 
 
-def raw_to_duty_and_direction(raw: int) -> tuple[float, str]:
+def raw_to_duty_and_direction(raw: int) -> Tuple[float, str]:
     """
     Convierte el valor crudo del eje en (duty_cycle, dirección).
     """
@@ -69,7 +69,7 @@ def read_joystick():
                 if event.ev_type != "Absolute":
                     continue
 
-                raw = event.state
+                raw = (event.state-128)*200
 
                 with state_lock:
                     if event.code == "ABS_Y":          # Palanca izquierda Y
@@ -95,7 +95,7 @@ def read_joystick():
 # ──────────────────────────────────────────────
 # Hilo 2: reporte cada 100 ms
 # ──────────────────────────────────────────────
-def report_loop(interval_ms: int = 100):
+def report_loop(interval_ms: int = 500, ser=None):
     """Envia por serial el resumen del estado cada `interval_ms` milisegundos."""
     interval_s = interval_ms / 1000.0
     print(f"[Reporte] Iniciando reporte cada {interval_ms} ms...\n")
@@ -119,8 +119,8 @@ def report_loop(interval_ms: int = 100):
 
         msg = f"L:{l['duty']:.2f}:{l['direction']},R:{r['duty']:.2f}:{r['direction']}\n"
         
-        if serial_port.is_open:
-            serial_port.write(msg.encode("utf-8"))  # Envia por serial
+        if ser.is_open:
+            ser.write(msg.encode("utf-8"))  # Envia por serial
         else:
             print("[Reporte] Error: Puerto serial no está abierto.")
 
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     t_joy.start()
 
     # Hilo de reporte (daemon)
-    t_report = threading.Thread(target=report_loop, args=(100,), daemon=True)
+    t_report = threading.Thread(target=report_loop, args=(500,serial_port), daemon=True)
     t_report.start()
 
     # Mantener el programa vivo

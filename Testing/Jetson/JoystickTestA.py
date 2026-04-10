@@ -1,4 +1,4 @@
-from time import time
+import time
 from inputs import get_gamepad
 import math
 
@@ -13,7 +13,7 @@ def leer_mando():
             elif evento.ev_type == "Key":
                 print(f"Botón:  {evento.code:20s} | {'PRESIONADO' if evento.state else 'SOLTADO'}")
         
-        time.sleep(0.2)  # Pequeña pausa para evitar saturar la salida
+        #time.sleep(0.1)  # Pequeña pausa para evitar saturar la salida
 
 if __name__ == "__main__":
     leer_mando()
