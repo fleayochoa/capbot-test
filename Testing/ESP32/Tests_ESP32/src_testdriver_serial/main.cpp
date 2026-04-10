@@ -56,20 +56,20 @@ void decode_message(const char* mensaje) {
     if (elementosLeidos == 4) {
         update_motor(duty1, state1, CANAL_PWM_L, PIN_IN1, PIN_IN2);
         update_motor(duty2, state2, CANAL_PWM_R, PIN_IN3, PIN_IN4);
-        Serial.println("Mensaje decodificado correctamente:");
+        //Serial.println("Mensaje decodificado correctamente:");
     }
-    else {
+    /*else {
         Serial.println("Error");
-    }
+    }*/
 }
 
 void setup() {
     // Inicializamos el puerto serie 0 para ver los resultados en la PC
-    Serial.begin(115200);
+    //Serial.begin(115200);
     
     // Inicializamos Serial2 para recibir los datos del otro dispositivo
     // Formato: baudios, configuración de bits, pin RX, pin TX
-    //Serial2.begin(115200);
+    Serial2.begin(115200);
     pinMode(PIN_IN1, OUTPUT);
     pinMode(PIN_IN2, OUTPUT);
     pinMode(PIN_IN3, OUTPUT);
@@ -84,14 +84,14 @@ void setup() {
     update_motor(0.0, 'S', CANAL_PWM_R, PIN_IN3, PIN_IN4);
 
     delay(1000); 
-    Serial.println("\nESP32 lista. Esperando datos por el Serial2 (Pines RX: 16, TX: 17)...");
+    //Serial.println("\nESP32 lista. Esperando datos por el Serial2 (Pines RX: 16, TX: 17)...");
 }
 
 void loop() {
     // Comprobamos si ha llegado algún dato al Serial2
-    if (Serial.available() > 0) {
+    if (Serial2.available() > 0) {
         // Leemos todo el mensaje hasta encontrar un salto de línea ('\n')
-        String received_message = Serial.readStringUntil('\n');
+        String received_message = Serial2.readStringUntil('\n');
         received_message.trim();
 
         // Solo procesamos si el mensaje tiene contenido después de limpiarlo
