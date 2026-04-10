@@ -11,9 +11,10 @@ void setup() {
 void loop() {
   if (Serial2.available()) {
     String data = Serial2.readStringUntil('\n');
-    Serial.println("Jetson dice: " + data);
+    Serial.println("J: " + data);
     
     // Responder a la Jetson
-    Serial2.println("Mensaje recibido, Jetson!");
+    //Serial2.println("Mensaje recibido, Jetson!");
   }
+  delay(50); // Pequeña pausa para evitar saturar el loop
 }
