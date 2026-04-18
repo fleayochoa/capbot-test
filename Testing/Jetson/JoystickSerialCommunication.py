@@ -29,7 +29,7 @@ DEADZONE_HIGH = 1500   # umbral para la mitad negativa (FORWARD)
 DEADZONE_LOW  = 1500   # umbral para la mitad positiva (REVERSE)
 
 # Pausa del hilo de lectura en ms
-POLL_INTERVAL_MS = 20 
+POLL_INTERVAL_MS = 1 
 
 
 def raw_to_duty_and_direction(raw: int) -> Tuple[float, str]:
@@ -89,7 +89,7 @@ def read_joystick():
 
         except Exception as e:
             print(f"[Joystick] Error: {e}")
-            time.sleep(0.5)
+            time.sleep(0.2)
 
 
 # ──────────────────────────────────────────────
@@ -110,14 +110,15 @@ def report_loop(interval_ms: int = 500, ser=None):
         # Timestamp con formato HH:MM:SS.mmm
         timestamp = time.strftime("%H:%M:%S") + f".{int(time.time()*1000)%1000:03d}"
 
-        print(
-            f"[{timestamp}] "
-            f"IZQUIERDA → duty={l['duty']:.3f}  dir={l['direction']:<7}  "
-            f"| "
-            f"DERECHA   → duty={r['duty']:.3f}  dir={r['direction']:<7}"
-        )
+        # print(
+         #   f"[{timestamp}] "
+         #   f"IZQUIERDA → duty={l['duty']:.3f}  dir={l['direction']:<7}  "
+          #  f"| "
+           # f"DERECHA   → duty={r['duty']:.3f}  dir={r['direction']:<7}"
+        #)
 
         msg = f"L:{l['duty']:.2f}:{l['direction']},R:{r['duty']:.2f}:{r['direction']}\n"
+        print(msg)
         
         if ser.is_open:
             ser.write(msg.encode("utf-8"))  # Envia por serial
